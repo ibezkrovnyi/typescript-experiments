@@ -1,5 +1,6 @@
-import { actions } from './actionCreators';
-import { ActionTypes } from './actionTypes';
+import { ActionUnion, ActionByType } from "./helpers";
+import * as actionCreators from './actionCreators';
+import { ActionTypes } from "./actionTypes";
 
 const initialState = {
   app: {
@@ -7,8 +8,7 @@ const initialState = {
   },
 };
 
-// Union
-type Action = ReturnType<typeof actions[keyof typeof actions]>;
+type Action = ActionUnion<typeof actionCreators>;
 
 export function appReducer(store = initialState.app, action: Action) {
   switch (action.type) {
@@ -23,6 +23,11 @@ export function appReducer(store = initialState.app, action: Action) {
 
       action.p1; // error
       action.p2; // error
+
+      let a: ActionByType<Action, ActionTypes.Action1>;
+      a.p1; // ok
+      a.p2; // ok
+      a.p3; // error
       break;
     default:
       return store;
