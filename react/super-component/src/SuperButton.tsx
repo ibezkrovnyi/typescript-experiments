@@ -20,20 +20,14 @@ type P = Props<typeof ButtonWithIcon>
 type D = DefaultPropNames<typeof ButtonWithIcon>
 
 type GetAllPropNames<T extends any[]> = { [key in keyof T]: Extract<keyof Props<T[key]>, string> }[number];
-// keyof T[number]
-
-// type M<T extends readonly ComponentFactory<any>[]> = ((...args: T) => any) extends ((
-//   ...args: ComponentFactory<infer P>[]
-// ) => any) ? 
-//   ComponentFactory<infer P> ? P : never;
 
 export type AllPropNames2 = GetAllPropNames<[typeof ButtonWithIcon, typeof ButtonWithLabel]>;
-export type MM<T extends { defaultProps?: object }, AllPropNames extends string> = T extends { defaultProps?: object } ? MakeDefaultPropsOptionalInProps<T, DefaultPropNames<T>, AllPropNames> : never;
+export type MM<T extends { defaultProps?: object }, AllPropNames extends string> = T extends { defaultProps?: object } ? MakeDefaultPropsOptionalInProps<Props<T>, DefaultPropNames<T>, AllPropNames> : never;
 
 export type ApplyDefaultProps<
   T extends any[],
   AllPropNames extends string = GetAllPropNames<T>,
-  > = { [key in keyof T]: MM<T[key], AllPropNames> }[number]
+  > = { [key in Extract<keyof T, number>]: MM<T[key], AllPropNames> }[number]
 
 export type SuperButtonProps = ApplyDefaultProps<[typeof ButtonWithIcon, typeof ButtonWithLabel]>;
 
@@ -63,3 +57,30 @@ export const SuperButtonAsArrowFunction = (props: SuperButtonProps) => {
   }
   unreachable(props);
 }
+
+const tests = {
+  'AsClass': {
+    'with-icon': {
+      'Good': [
+        <SuperButtonAsClass type="with-icon" icon="" />,
+        <SuperButtonAsClass type="with-icon" icon="" onClick={() => { }} />,
+        <SuperButtonAsClass type="with-icon" icon="" onDoubleClick={() => { }}/>,
+        <SuperButtonAsClass type="with-icon" icon="" onClick={() => { }} onDoubleClick={() => { }}/>,
+      ],
+      'Errors': {
+        'title is only in with-label': <SuperButtonAsClass type="with-icon" icon="" title="" />,
+      }
+    },
+    'with-label': {
+      'Good': [
+        <SuperButtonAsClass type="with-label" label="" />,
+        <SuperButtonAsClass type="with-label" label="" title="" />,
+        <SuperButtonAsClass type="with-label" label="" onClick={() => { }} />,
+        <SuperButtonAsClass type="with-label" label="" onClick={() => { }} title="" />,
+      ],
+      'Errors': {
+        'onDoubleClick is only in with-icon': <SuperButtonAsClass type="with-label" label="" onDoubleClick={() => { }} />,
+      }
+    }
+  }
+};
