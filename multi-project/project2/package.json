@@ -1,20 +1,17 @@
 {
-  "name": "playground-2.8dev",
+  "name": "project2",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc ./project2-consumes-dts.ts --declaration --outDir ./dist --emitDeclarationOnly",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/react": "^16.0.38",
-    "@types/react-redux": "^5.0.15",
-    "react": "^16.2.0",
-    "react-redux": "^5.0.7",
-    "redux": "^3.7.2",
-    "typescript": "3.5.0-dev.20190424"
+    "@types/react-redux": "^6.0.2",
+    "typescript": "^2.9.1"
   }
 }
