@@ -1,38 +1,14 @@
 import React from 'react';
 import { ButtonWithIcon } from './impl/ButtonWithIcon';
 import { ButtonWithLabel } from './impl/ButtonWithLabel';
-import { MakeDefaultPropsOptionalInProps, MakeDefaultPropsOptionalInProps2, unreachable } from './utils'
+import { ButtonWithCheckbox } from './impl/ButtonWithCheckbox';
+import { unreachable, SuperComponentProps } from './utils'
 
-type ButtonWithIconProps = React.ComponentProps<typeof ButtonWithIcon>;
-type ButtonWithLabelProps = React.ComponentProps<typeof ButtonWithLabel>;
-
-type AllPropNames = keyof ButtonWithIconProps | keyof ButtonWithLabelProps;
-
-export type SuperButtonPropsOld =
-  | MakeDefaultPropsOptionalInProps2<ButtonWithIconProps, typeof ButtonWithIcon.defaultProps, AllPropNames>
-  | MakeDefaultPropsOptionalInProps2<ButtonWithLabelProps, typeof ButtonWithLabel.defaultProps, AllPropNames>;
-
-type ComponentFactory<P> = React.FunctionComponent<P> | React.ComponentClass<P>
-type Props<T> = T extends ComponentFactory<infer P> ? P : never;
-type DefaultPropNames<T extends { defaultProps?: object }> = Extract<keyof T['defaultProps'], string>;
-
-type P = Props<typeof ButtonWithIcon>
-type D = DefaultPropNames<typeof ButtonWithIcon>
-
-type GetAllPropNames<T extends any[]> = { [key in keyof T]: Extract<keyof Props<T[key]>, string> }[number];
-
-export type AllPropNames2 = GetAllPropNames<[typeof ButtonWithIcon, typeof ButtonWithLabel]>;
-export type MM<T extends { defaultProps?: object }, AllPropNames extends string> = T extends { defaultProps?: object } ? MakeDefaultPropsOptionalInProps<Props<T>, DefaultPropNames<T>, AllPropNames> : never;
-
-export type ApplyDefaultProps<
-  T extends any[],
-  AllPropNames extends string = GetAllPropNames<T>,
-  > = { [key in Extract<keyof T, number>]: MM<T[key], AllPropNames> }[number]
-
-export type SuperButtonProps = ApplyDefaultProps<[typeof ButtonWithIcon, typeof ButtonWithLabel]>;
+export type SuperButtonProps = SuperComponentProps<[typeof ButtonWithIcon, typeof ButtonWithCheckbox, typeof ButtonWithLabel]>;
 
 /**
- * Discriminated Union (Tagged Union) of Components, property is `type`
+ * SuperComponent (Class Component)
+ * Discriminated Union (Tagged Union) of Components, tag property is `type`
  */
 export class SuperButtonAsClass extends React.Component<SuperButtonProps> {
   render() {
@@ -42,11 +18,18 @@ export class SuperButtonAsClass extends React.Component<SuperButtonProps> {
 
       case 'with-label':
         return <ButtonWithLabel {...this.props} />;
+      
+      case 'with-checkbox':
+        return <ButtonWithCheckbox {...this.props} />;
     }
     unreachable(this.props);
   }
 }
 
+/**
+ * SuperComponent (Functional Component)
+ * Discriminated Union (Tagged Union) of Components, tag property is `type`
+ */
 export const SuperButtonAsArrowFunction = (props: SuperButtonProps) => {
   switch (props.type) {
     case 'with-icon':
@@ -54,33 +37,46 @@ export const SuperButtonAsArrowFunction = (props: SuperButtonProps) => {
 
     case 'with-label':
       return <ButtonWithLabel {...props} />;
+
+    case 'with-checkbox':
+      return <ButtonWithCheckbox {...props} />;
   }
   unreachable(props);
 }
 
 const tests = {
   'AsClass': {
-    'with-icon': {
+    'with-icon (Functional Component)': {
       'Good': [
         <SuperButtonAsClass type="with-icon" icon="" />,
-        <SuperButtonAsClass type="with-icon" icon="" onClick={() => { }} />,
-        <SuperButtonAsClass type="with-icon" icon="" onDoubleClick={() => { }}/>,
-        <SuperButtonAsClass type="with-icon" icon="" onClick={() => { }} onDoubleClick={() => { }}/>,
+        <SuperButtonAsClass type="with-icon" icon="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <SuperButtonAsClass type="with-icon" icon="" onDoubleClick={e => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <SuperButtonAsClass type="with-icon" icon="" onClick={e => { }} onDoubleClick={() => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
       ],
       'Errors': {
         'title is only in with-label': <SuperButtonAsClass type="with-icon" icon="" title="" />,
       }
     },
-    'with-label': {
+    'with-label (Functional Component)': {
       'Good': [
         <SuperButtonAsClass type="with-label" label="" />,
         <SuperButtonAsClass type="with-label" label="" title="" />,
-        <SuperButtonAsClass type="with-label" label="" onClick={() => { }} />,
-        <SuperButtonAsClass type="with-label" label="" onClick={() => { }} title="" />,
+        <SuperButtonAsClass type="with-label" label="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <SuperButtonAsClass type="with-label" label="" onClick={e => { }} title="" />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
       ],
       'Errors': {
         'onDoubleClick is only in with-icon': <SuperButtonAsClass type="with-label" label="" onDoubleClick={() => { }} />,
       }
-    }
+    },
+    'with-checkbox (Class Component)': {
+      'Good': [
+        <SuperButtonAsClass type="with-checkbox" />,
+        <SuperButtonAsClass type="with-checkbox" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLInputElement, MouseEvent>
+      ],
+      'Errors': {
+        'title is only in with-label': <SuperButtonAsClass type="with-checkbox" title="" />,
+        'onDoubleClick is only in with-icon': <SuperButtonAsClass type="with-checkbox" onDoubleClick={() => { }} />,
+      }
+    },
   }
 };
