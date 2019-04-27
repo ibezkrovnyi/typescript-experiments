@@ -1,26 +1,33 @@
-type OptionalPropertyNames<T> = { [key in keyof T]-?: undefined extends T[key] ? key : never }[keyof T];
-type Id<T> = { [K in keyof T]: [T[K]] extends [never] ? never : T[K] };
+type OptionalPropertyNames<T> = { [K in keyof T]-?: undefined extends T[K] ? K : never }[keyof T];
+type Id<T> = { [K in keyof T]: T[K] };
 
 export type MakeDefaultPropsOptionalInProps<
   Props,
-  DefaultPropNames extends string,
+  DefaultPropNames,
   AllPropNames extends string,
-  OptionalPropNames = DefaultPropNames | OptionalPropertyNames<Props>
+  OptionalPropNames extends string = Extract<OptionalPropertyNames<Props> | DefaultPropNames, string>,
+  RequiredPropNames extends keyof Props = Exclude<keyof Props, OptionalPropNames>,
+  NeverPropNames extends string = Exclude<AllPropNames, keyof Props>
   > = Id<
-    & { [K in Exclude<keyof Props, OptionalPropNames>]: Props[K] }
-    & { [K in Extract<keyof Props, OptionalPropNames>]?: Props[K] }
-    & { [K in Exclude<AllPropNames, keyof Props>]?: never }
+    & { [K in RequiredPropNames]: Props[K] }
+    & { [K in OptionalPropNames | NeverPropNames]?: K extends keyof Props ? Props[K] : never }
   >;
 
 type ComponentFactory<P> = React.FunctionComponent<P> | React.ComponentClass<P>
 type Props<T> = T extends ComponentFactory<infer P> ? P : never;
-type DefaultPropNames<T extends { defaultProps?: object }> = Extract<keyof T['defaultProps'], string>;
+type DefaultPropNames<T extends { defaultProps?: object }> = keyof T['defaultProps'];
 type GetAllPropNames<T extends any[]> = { [K in keyof T]: Extract<keyof Props<T[K]>, string> }[number];
-type SubcomponentProps<T, AllPropNames extends string> = T extends { defaultProps?: object } ? MakeDefaultPropsOptionalInProps<Props<T>, DefaultPropNames<T>, AllPropNames> : never;
+type SubcomponentProps<
+  T extends { defaultProps?: object },
+  AllPropNames extends string
+  > = MakeDefaultPropsOptionalInProps<Props<T>, DefaultPropNames<T>, AllPropNames>
 
-export type SuperComponentProps<TupleOfReactComponents extends any[], AllPropNames extends string = GetAllPropNames<TupleOfReactComponents>> = {
-  [K in Extract<keyof TupleOfReactComponents, number>]: SubcomponentProps<TupleOfReactComponents[K], AllPropNames>
-}[number]
+export type SuperComponentProps<
+  TupleOfReactComponents extends any[],
+  AllPropNames extends string = GetAllPropNames<TupleOfReactComponents>
+  > = {
+    [K in keyof TupleOfReactComponents]: SubcomponentProps<TupleOfReactComponents[K], AllPropNames>
+  }[number];
 
 export function unreachable(_value: never) {
   throw new Error('Error: this function should never be called');
