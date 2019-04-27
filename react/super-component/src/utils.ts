@@ -16,7 +16,7 @@ type Props<T> = T extends ComponentFactory<infer P> ? P : never;
 type DefaultPropNames<P, T extends { defaultProps?: object }> = Extract<keyof T['defaultProps'], keyof P>;
 type SubcomponentProps<T extends { defaultProps?: object }, P = Props<T>> = MakeDefaultPropsOptionalInProps<P, DefaultPropNames<P, T>>;
 
-export type SuperComponentProps<TupleOfReactComponents extends any[]> = {
+export type TaggedComponentProps<TupleOfReactComponents extends any[]> = {
   [K in keyof TupleOfReactComponents]: SubcomponentProps<TupleOfReactComponents[K]>
 }[number];
 

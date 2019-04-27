@@ -2,15 +2,15 @@ import React from 'react';
 import { ButtonWithIcon } from './impl/ButtonWithIcon';
 import { ButtonWithLabel } from './impl/ButtonWithLabel';
 import { ButtonWithCheckbox } from './impl/ButtonWithCheckbox';
-import { unreachable, SuperComponentProps } from './utils'
+import { unreachable, TaggedComponentProps } from './utils'
 
-export type SuperButtonProps = SuperComponentProps<[typeof ButtonWithIcon, typeof ButtonWithCheckbox, typeof ButtonWithLabel]>;
+export type TaggedButtonProps = TaggedComponentProps<[typeof ButtonWithIcon, typeof ButtonWithCheckbox, typeof ButtonWithLabel]>;
 
 /**
  * SuperComponent (Class Component)
  * Discriminated Union (Tagged Union) of Components, tag property is `type`
  */
-export class SuperButtonAsClass extends React.Component<SuperButtonProps> {
+export class TaggedButtonAsClass extends React.Component<TaggedButtonProps> {
   render() {
     switch (this.props.type) {
       case 'with-icon':
@@ -30,7 +30,7 @@ export class SuperButtonAsClass extends React.Component<SuperButtonProps> {
  * SuperComponent (Functional Component)
  * Discriminated Union (Tagged Union) of Components, tag property is `type`
  */
-export const SuperButtonAsArrowFunction = (props: SuperButtonProps) => {
+export const TaggedButtonAsArrowFunction = (props: TaggedButtonProps) => {
   switch (props.type) {
     case 'with-icon':
       return <ButtonWithIcon {...props} />;
@@ -45,37 +45,72 @@ export const SuperButtonAsArrowFunction = (props: SuperButtonProps) => {
 }
 
 const tests = {
-  'AsClass': {
+  'Tagged Class Component': {
     'with-icon (Functional Component)': {
       'Good': [
-        <SuperButtonAsClass type="with-icon" icon="" />,
-        <SuperButtonAsClass type="with-icon" icon="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
-        <SuperButtonAsClass type="with-icon" icon="" onDoubleClick={e => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
-        <SuperButtonAsClass type="with-icon" icon="" onClick={e => { }} onDoubleClick={() => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsClass type="with-icon" icon="" />,
+        <TaggedButtonAsClass type="with-icon" icon="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsClass type="with-icon" icon="" onDoubleClick={e => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsClass type="with-icon" icon="" onClick={e => { }} onDoubleClick={() => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
       ],
       'Errors': {
-        'title is only in with-label': <SuperButtonAsClass type="with-icon" icon="" title="" />,
+        'title is only in with-label': <TaggedButtonAsClass type="with-icon" icon="" title="" />,
       }
     },
     'with-label (Functional Component)': {
       'Good': [
-        <SuperButtonAsClass type="with-label" label="" />,
-        <SuperButtonAsClass type="with-label" label="" title="" />,
-        <SuperButtonAsClass type="with-label" label="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
-        <SuperButtonAsClass type="with-label" label="" onClick={e => { }} title="" />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsClass type="with-label" label="" />,
+        <TaggedButtonAsClass type="with-label" label="" title="" />,
+        <TaggedButtonAsClass type="with-label" label="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsClass type="with-label" label="" onClick={e => { }} title="" />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
       ],
       'Errors': {
-        'onDoubleClick is only in with-icon': <SuperButtonAsClass type="with-label" label="" onDoubleClick={() => { }} />,
+        'onDoubleClick is only in with-icon': <TaggedButtonAsClass type="with-label" label="" onDoubleClick={() => { }} />,
       }
     },
     'with-checkbox (Class Component)': {
       'Good': [
-        <SuperButtonAsClass type="with-checkbox" />,
-        <SuperButtonAsClass type="with-checkbox" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLInputElement, MouseEvent>
+        <TaggedButtonAsClass type="with-checkbox" />,
+        <TaggedButtonAsClass type="with-checkbox" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLInputElement, MouseEvent>
       ],
       'Errors': {
-        'title is only in with-label': <SuperButtonAsClass type="with-checkbox" title="" />,
-        'onDoubleClick is only in with-icon': <SuperButtonAsClass type="with-checkbox" onDoubleClick={() => { }} />,
+        'title is only in with-label': <TaggedButtonAsClass type="with-checkbox" title="" />,
+        'onDoubleClick is only in with-icon': <TaggedButtonAsClass type="with-checkbox" onDoubleClick={() => { }} />,
+      }
+    },
+  },
+
+  'Tagged Functional Component': {
+    'with-icon (Functional Component)': {
+      'Good': [
+        <TaggedButtonAsArrowFunction type="with-icon" icon="" />,
+        <TaggedButtonAsArrowFunction type="with-icon" icon="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsArrowFunction type="with-icon" icon="" onDoubleClick={e => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsArrowFunction type="with-icon" icon="" onClick={e => { }} onDoubleClick={() => { }}/>, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+      ],
+      'Errors': {
+        'title is only in with-label': <TaggedButtonAsArrowFunction type="with-icon" icon="" title="" />,
+      }
+    },
+    'with-label (Functional Component)': {
+      'Good': [
+        <TaggedButtonAsArrowFunction type="with-label" label="" />,
+        <TaggedButtonAsArrowFunction type="with-label" label="" title="" />,
+        <TaggedButtonAsArrowFunction type="with-label" label="" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+        <TaggedButtonAsArrowFunction type="with-label" label="" onClick={e => { }} title="" />, // `e`  is of type React.MouseEvent<HTMLButtonElement, MouseEvent>
+      ],
+      'Errors': {
+        'onDoubleClick is only in with-icon': <TaggedButtonAsArrowFunction type="with-label" label="" onDoubleClick={() => { }} />,
+      }
+    },
+    'with-checkbox (Class Component)': {
+      'Good': [
+        <TaggedButtonAsArrowFunction type="with-checkbox" />,
+        <TaggedButtonAsArrowFunction type="with-checkbox" onClick={e => { }} />, // `e`  is of type React.MouseEvent<HTMLInputElement, MouseEvent>
+      ],
+      'Errors': {
+        'title is only in with-label': <TaggedButtonAsArrowFunction type="with-checkbox" title="" />,
+        'onDoubleClick is only in with-icon': <TaggedButtonAsArrowFunction type="with-checkbox" onDoubleClick={() => { }} />,
       }
     },
   }
