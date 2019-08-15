@@ -1,5 +1,6 @@
 import { Base, BaseProps } from "./01 - Base Component";
 import { Derived } from "./02 - Derived Component";
+import { EnhancedProps } from "./50 - Helpers";
 
 /* Types */
 
@@ -32,8 +33,12 @@ const enhance = <TWrappedProps extends object>(
 
   // Other EnhancedComponent props
   ...props
-}: EnhancedProps<TWrappedProps & WrappedComponentPropsConstraint, AddedProps, ChangedProps, RemovedPropKeys>) => {
-
+}: EnhancedProps<{
+  wrappedProps: TWrappedProps & WrappedComponentPropsConstraint;
+  addedProps: AddedProps;
+  changedProps: ChangedProps;
+  removedKeys: RemovedPropKeys;
+}>) => {
   // We need this cast because of generics,
   // but if type was wrong TS will complain
   const innerProps = {

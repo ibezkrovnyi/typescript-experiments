@@ -1,29 +1,29 @@
+type EnhancedPropsConstraint = { wrappedProps: {}, addedProps: {}, changedProps: {}, removedKeys: string };
+
 // Calculate EnhancedComponentProps
-type EnhancedPropsSimple<WrappedComponentProps, AddedProps, ChangedProps, RemovedPropKeys extends string> = Omit<
-  WrappedComponentProps,
-  RemovedPropKeys | keyof ChangedProps
+type EnhancedPropsSimple<T extends EnhancedPropsConstraint> = Omit<
+  T['wrappedProps'],
+  T['removedKeys'] | keyof T['changedProps']
 > &
-  AddedProps &
-  ChangedProps;
+  T['addedProps'] &
+  T['changedProps'];
 
 // Check that WrappedComponentProps and HOC Props are valid (see below)
 // and then calculate EnhancedComponentProps
-type EnhancedProps<WrappedComponentProps, AddedProps, ChangedProps, RemovedPropKeys extends string> = CheckWrappedComponentProps<
-  WrappedComponentProps, AddedProps, ChangedProps, RemovedPropKeys
+export type EnhancedProps<T extends EnhancedPropsConstraint> = CheckWrappedComponentProps<
+  T
 > extends true
-  ? Omit<WrappedComponentProps, RemovedPropKeys | keyof ChangedProps> &
-      AddedProps &
-      ChangedProps
+  ? EnhancedPropsSimple<T>
   : never;
 
 // Check that WrappedComponentProps:
 // - have no Added props
 // - have Removed Props
 // - have Changed Props
-type CheckWrappedComponentProps<WrappedComponentProps, AddedProps, ChangedProps, RemovedPropKeys> = [
-  Exclude<keyof ChangedProps | RemovedPropKeys, keyof WrappedComponentProps>
+type CheckWrappedComponentProps<T extends EnhancedPropsConstraint> = [
+  Exclude<keyof T["changedProps"] | T["removedKeys"], keyof T["wrappedProps"]>
 ] extends [never]
-  ? [Extract<keyof WrappedComponentProps, keyof AddedProps>] extends [never]
+  ? [Extract<keyof T["wrappedProps"], keyof T["addedProps"]>] extends [never]
     ? true
     : false
   : false;
