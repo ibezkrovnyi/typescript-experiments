@@ -1,3 +1,5 @@
+import React from 'react';
+
 export type BaseProps = {
   a: 'a1' | 'a2',
   b: 'b1' | 'b2',

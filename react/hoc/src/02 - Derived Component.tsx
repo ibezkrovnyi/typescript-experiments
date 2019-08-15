@@ -1,3 +1,4 @@
+import React from 'react';
 import { BaseProps } from "./01 - Base Component";
 
 export type DerivedProps = BaseProps & {
