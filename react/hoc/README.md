@@ -2,7 +2,7 @@
 
 1. Add prop
 
-[Add prop](react/hoc/src/10 - Add prop.tsx)
+[Add prop](../blob/master/react/hoc/src/10 - Add prop.tsx)
 
 2. Remove prop
 3. Change prop
