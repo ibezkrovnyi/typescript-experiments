@@ -1,9 +1,6 @@
 # Contents
 
-1. Add prop
-
-[Add prop](src/10%20-%20Add%20prop.tsx)
-
+1. Add prop [Add prop](src/10%20-%20Add%20prop.tsx)
 2. Remove prop
 3. Change prop
 4. Use prop from WrappedComponent
