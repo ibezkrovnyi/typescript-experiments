@@ -7,7 +7,11 @@
 5. [Full example with comments](src/20%20-%20Full%20example%20with%20comments.tsx)
 
 # Features
-- Protection against 
+
+### Protection against cases like:
+- some of Added props are already on Props of WrappedComponent
+- some of Changed props are **not** on Props of WrappedComponent
+- some of Removed props are **not** on Props of WrappedComponent
 
 # Not covered
 - When RemovedPropKeys = 'a' and WrappedComponentPropsConstraint = {}, then TWrappedProps infers { a: ... } from WrappedComponent and CheckWrappedComponentProps tells props are correct because it takes into account `WrappedComponentPropsConstraint & TWrappedProps`.
