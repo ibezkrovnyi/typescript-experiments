@@ -1,4 +1,4 @@
-type EnhancedPropsConstraint = { wrappedProps: {}, addedProps: {}, changedProps: {}, removedKeys: string };
+export type EnhancedPropsConstraint = { wrappedProps: {}, addedProps: {}, changedProps: {}, removedKeys: string };
 
 // Calculate EnhancedComponentProps
 type EnhancedPropsSimple<T extends EnhancedPropsConstraint> = Omit<

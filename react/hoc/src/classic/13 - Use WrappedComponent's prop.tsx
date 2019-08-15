@@ -1,7 +1,7 @@
 import React from 'react';
-import { Base, BaseProps } from "./01 - Base Component";
-import { Derived } from "./02 - Derived Component";
-import { EnhancedProps } from "./50 - Helpers";
+import { Base, BaseProps } from "../01 - Base Component";
+import { Derived } from "../02 - Derived Component";
+import { EnhancedProps } from "../50 - Helpers";
 
 /* Types */
 

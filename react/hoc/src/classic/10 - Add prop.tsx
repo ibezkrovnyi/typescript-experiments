@@ -1,17 +1,12 @@
 import React from 'react';
-import { Base, BaseProps } from "./01 - Base Component";
-import { Derived } from "./02 - Derived Component";
-import { EnhancedProps } from "./50 - Helpers";
+import { Base } from "../01 - Base Component";
+import { Derived } from "../02 - Derived Component";
+import { EnhancedProps } from "../50 - Helpers";
 
 /* Types */
-
-// HOC Requirement - Minimally required props for WrappedComponent:
-// Could be`type WrappedComponentPropsConstraint = BaseProps`
-type WrappedComponentPropsConstraint = {
-  a: "a1" | "a2";
-};
-type ChangedProps = {
-  a: () => "changed-prop-type";
+type WrappedComponentPropsConstraint = {};
+type AddedProps = {
+  z: "added-prop";
 };
 
 // HOC
@@ -20,24 +15,21 @@ const enhance = <TWrappedProps extends object>(
     TWrappedProps & WrappedComponentPropsConstraint
   >
 ) => ({
-  // Changed prop
-  a,
+  // Added prop
+  z,
 
   // Other EnhancedComponent props
   ...props
 }: EnhancedProps<{
   wrappedProps: TWrappedProps & WrappedComponentPropsConstraint;
-  addedProps: {};
-  changedProps: ChangedProps;
+  addedProps: AddedProps;
+  changedProps: {};
   removedKeys: never;
 }>) => {
   // We need this cast because of generics,
   // but if type was wrong TS will complain
   const innerProps = {
     ...props,
-
-    // Changed prop
-    a: "a2"
   } as TWrappedProps & WrappedComponentPropsConstraint;
 
   return <WrappedComponent {...innerProps}>{props}</WrappedComponent>;
@@ -50,14 +42,15 @@ const EnhancedDerived = enhance(Derived);
 // Usage
 const usage = (
   <>
-    <EnhancedBase a={() => "changed-prop-type"} b="b1" c="c1" />
+    <EnhancedBase a="a2" b="b1" c="c1" z="added-prop" />
     <EnhancedDerived
-      a={() => "changed-prop-type"}
+      a="a1"
       b="b2"
       c="c2"
       d={2}
       e={4}
       f={5}
+      z="added-prop"
     />
   </>
 );
