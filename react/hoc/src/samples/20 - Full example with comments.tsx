@@ -4,7 +4,8 @@ import { EnhancedProps } from "./50 - Helpers";
 
 /* Types */
 
-// Could be `type WrappedComponentPropsConstraint = BaseProps`
+// HOC Requirement - Minimally required props for WrappedComponent: 
+// Could be`type WrappedComponentPropsConstraint = BaseProps`
 type WrappedComponentPropsConstraint = {
   a: "a1" | "a2";
   b: "b1" | "b2";
