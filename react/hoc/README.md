@@ -9,9 +9,9 @@
 # Features
 
 ### Protection against cases like:
-- some of Added props are already on Props of WrappedComponent
-- some of Changed props are **not** on Props of WrappedComponent
-- some of Removed props are **not** on Props of WrappedComponent
+- some of Added props are already on Props type of WrappedComponent
+- some of Changed props are **not** on Props type of WrappedComponent
+- some of Removed props are **not** on Props type of WrappedComponent
 
 # Not covered
 - When RemovedPropKeys = 'a' and WrappedComponentPropsConstraint = {}, then TWrappedProps infers { a: ... } from WrappedComponent and CheckWrappedComponentProps tells props are correct because it takes into account `WrappedComponentPropsConstraint & TWrappedProps`.
