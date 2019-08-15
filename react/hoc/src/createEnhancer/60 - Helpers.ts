@@ -21,3 +21,16 @@ export const createEnhancer = <T extends EnhancedPropsConstraint>(
       removedKeys: T["removedKeys"];
     }>
   ) => JSX.Element)(WrappedComponent);
+
+// Check that WrappedComponentProps:
+// - have no Added props
+// - have Removed Props
+// - have Changed Props
+export type ValidateWrappedComponentProps<ResultType, TWrappedProps, WrappedProps, AddedProps, ChangedProps, RemovedKeys> = [
+  Exclude<keyof ChangedProps | RemovedKeys, keyof WrappedProps>
+] extends [never]
+  ? [Extract<keyof TWrappedProps | keyof WrappedProps, keyof AddedProps>] extends [never]
+    ? ResultType
+    : never
+  : never;
+  
