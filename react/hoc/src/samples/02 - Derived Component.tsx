@@ -1,8 +1,8 @@
 import { BaseProps } from "./01 - Base Component";
 
 export type DerivedProps = BaseProps & {
-  a: 'a1' | 'a2',
-  b: 'b1' | 'b2',
-  c: 'c1' | 'c2',
+  d: 1 | 2,
+  e: 3 | 4,
+  f: 5 | 6,
 }
 export const Derived = <T extends DerivedProps>(props: T) => <div>{props}</div>

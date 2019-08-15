@@ -1,58 +1,77 @@
 import { Base, BaseProps } from "./01 - Base Component";
 import { Derived } from "./02 - Derived Component";
 
-// Types
-type AddedProps = {
-  d: 'added-prop';
-}
-type ChangedProps = {
-  a: () => 'changed-prop-type';
+/* Types */
+
+// Could be `type WrappedComponentPropsConstraint = BaseProps`
+type WrappedComponentPropsConstraint = {
+  a: "a1" | "a2";
+  b: "b1" | "b2";
+  c: "c1" | "c2";
 };
-type RemovedPropKeys = 'b';
+type AddedProps = {
+  // d: 1;
+  z: "added-prop";
+};
+type ChangedProps = {
+  a: () => "changed-prop-type";
+};
+type RemovedPropKeys = "b";
 
-// Helpers
-type EnhancedProps<TWrappedComponentProps> = Omit<TWrappedComponentProps, RemovedPropKeys | keyof ChangedProps> & AddedProps & ChangedProps;
+// HOC
+const enhance = <TWrappedProps extends object>(
+  WrappedComponent: React.JSXElementConstructor<
+    TWrappedProps & WrappedComponentPropsConstraint
+  >
+) => ({
+  // Changed prop
+  a,
 
-// Check that EnhancedProps have no Removed props 
-// Check that WrappedComponentProps have no Added props
-// type Guard<TWrappedComponentProps, AddedProps | RemovedPropKeys> = 
+  // Added prop
+  z,
 
-const enhance = <TBaseProps extends object>(Component: React.JSXElementConstructor<BaseProps & TBaseProps>) =>
-  ({
+  // Other EnhancedComponent props
+  ...props
+}: EnhancedProps<TWrappedProps & WrappedComponentPropsConstraint, AddedProps, ChangedProps, RemovedPropKeys>) => {
+
+  // We need this cast because of generics,
+  // but if type was wrong TS will complain
+  const innerProps = {
+    ...props,
+
     // Changed prop
-    a,
+    a: "a2",
 
-    // Added prop
-    d,
+    // Removed prop
+    b: "b2"
+  } as TWrappedProps & WrappedComponentPropsConstraint;
 
-    // Other EnhancedComponent props
-    ...props
-  }: EnhancedProps<TBaseProps & BaseProps>) => {
+  // Use WrappedComponent "c" prop
+  console.log(innerProps.c);
 
-    // We need this cast because of generics,
-    // but if type was wrong TS will complain
-    const innerProps = {
-      ...props,
-      
-      // Changed prop
-      a: 'a2',
+  // We cannot access props `d`, `e` and `f` from DerivedProps here,
+  // as these props are not in WrappedComponentPropsConstraint
+  // innerProps.d; innerProps.e; innerProps.f;
 
-      // Removed prop
-      b: 'b2',
-    } as TBaseProps & BaseProps;
-    
-    // Use WrappedComponent "c" prop
-    console.log(innerProps.c);
-
-    return <Component {...innerProps}>{props}</Component>;
-  }
+  return <WrappedComponent {...innerProps}>{props}</WrappedComponent>;
+};
 
 // Enhance
 const EnhancedBase = enhance(Base);
 const EnhancedDerived = enhance(Derived);
 
 // Usage
-const usage = <>
-  <EnhancedBase a={() => 'changed-prop-type'} c="c1" d="added-prop" />
-  <EnhancedDerived a={() => 'changed-prop-type'} c="c2" d="added-prop" />
-</>;
+const usage = (
+  <>
+    <EnhancedBase a={() => "changed-prop-type"} c="c1" z="added-prop" />
+    <EnhancedDerived
+      a={() => "changed-prop-type"}
+      c="c2"
+      d={2}
+      e={4}
+      f={5}
+      z="added-prop"
+    />
+  </>
+);
+usage;
